@@ -1,0 +1,1956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ashley's ChatGPT Extractor ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff5f7;
+            color: #5a3d5c;
+            transition: all 0.5s ease;
+            position: relative;
+            overflow-x: hidden;
+        }
+        body.party-mode {
+            animation: psychedelic-bg 5s infinite;
+        }
+        h1 {
+            text-align: center;
+            color: #d05d8a;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        h1:before, h1:after {
+            content: " ❤️ ";
+        }
+        h1.party-mode {
+            animation: rainbow-text 3s infinite;
+            font-size: 2.5em;
+        }
+        h1.party-mode:before, h1.party-mode:after {
+            content: " 🪩 ";
+            animation: spin 3s linear infinite;
+            display: inline-block;
+        }
+        pre {
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 15px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            border: 2px solid #f7cad9;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 10; /* Ensure text stays above emojis */
+        }
+        pre.party-mode {
+            animation: border-party 4s infinite;
+            background-color: rgba(255, 255, 255, 0.9); /* More opaque background */
+            box-shadow: 0 0 25px rgba(255, 102, 204, 0.5);
+        }
+        .error { 
+            color: #e66767; 
+            font-weight: 500;
+        }
+        .success { 
+            color: #6dc48a; 
+            font-weight: 500;
+        }
+        button {
+            padding: 12px 20px;
+            background-color: #d05d8a;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background-color: #e77da5;
+            transform: translateY(-2px);
+        }
+        button.party-mode {
+            animation: button-party 3s infinite;
+        }
+        #downloadBtn {
+            background-color: #7d93e0;
+            margin-left: 10px;
+            display: none;
+        }
+        #downloadBtn:hover {
+            background-color: #99aae8;
+        }
+        #fileInput {
+            margin-bottom: 20px;
+        }
+        .instructions {
+            background-color: #fdeef2;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border-left: 5px solid #f7cad9;
+            transition: all 0.3s ease;
+        }
+        .instructions.party-mode {
+            animation: border-party 4s infinite;
+            background-color: rgba(253, 238, 242, 0.9);
+        }
+        .file-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .heart-divider {
+            text-align: center;
+            font-size: 24px;
+            margin: 20px 0;
+            color: #d05d8a;
+            transition: all 0.3s ease;
+        }
+        .heart-divider.party-mode {
+            animation: heartbeat 1s infinite;
+            font-size: 32px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 14px;
+            color: #8a7191;
+            transition: all 0.3s ease;
+        }
+        .footer.party-mode {
+            animation: rainbow-text 3s infinite;
+            font-size: 18px;
+        }
+        #result {
+            padding: 10px;
+            text-align: center;
+            font-weight: 500;
+        }
+        .title-container {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .title-container img {
+            max-width: 60px;
+            margin-bottom: 10px;
+        }
+        .output-container {
+            position: relative;
+            margin-top: 20px;
+        }
+        .sort-controls {
+            position: absolute;
+            top: -40px;
+            right: 10px;
+            display: flex;
+            gap: 10px;
+            z-index: 20; /* Make sure controls stay above emojis */
+        }
+        .sort-btn {
+            font-size: 12px;
+            padding: 8px 12px;
+            border-radius: 20px;
+            background-color: #f7cad9;
+            color: #5a3d5c;
+        }
+        .sort-btn.active {
+            background-color: #d05d8a;
+            color: white;
+        }
+        .sort-btn:hover {
+            background-color: #e77da5;
+        }
+
+        /* Easter egg button */
+        #partyButton {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #ffdfeb;
+            color: #d05d8a;
+            font-size: 20px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 2px solid #f7cad9;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        #partyButton:hover {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 0 10px #ff97c9;
+        }
+        #partyButton.active {
+            background-color: rgba(255, 111, 183, 0.7);
+            color: white;
+            animation: spin 3s linear infinite;
+            border: 2px solid #ffffff;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
+        }
+
+        /* Mute button */
+        #muteButton {
+            position: absolute;
+            top: 10px;
+            right: 60px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #ffdfeb;
+            color: #d05d8a;
+            font-size: 20px;
+            padding: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 2px solid #f7cad9;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        #muteButton:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px #ff97c9;
+        }
+        #muteButton.muted {
+            background-color: #e66767;
+            color: white;
+        }
+
+        /* Game Score Display */
+        .score-display {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #d05d8a;
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(255, 105, 180, 0.5);
+            z-index: 1000;
+            display: none;
+            animation: pulse 2s infinite;
+        }
+        
+        .score-display.visible {
+            display: block;
+        }
+        
+        .score-pop {
+            position: absolute;
+            color: #ff3399;
+            font-weight: bold;
+            font-size: 18px;
+            pointer-events: none;
+            animation: score-float 1.5s forwards;
+            z-index: 1001;
+        }
+        
+        @keyframes score-float {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-50px); opacity: 0; }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        /* Level display */
+        .level-display {
+            position: fixed;
+            top: 70px;
+            left: 20px;
+            padding: 8px 16px;
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #aa5eff;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(170, 94, 255, 0.5);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .level-display.visible {
+            display: block;
+        }
+
+        /* Disco Floor */
+        .disco-floor {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            opacity: 0;
+            transition: all 0.5s ease;
+            pointer-events: none;
+            z-index: -1;
+        }
+        .disco-floor.active {
+            height: 80px;
+            opacity: 1;
+        }
+        .disco-tile {
+            height: 100%;
+            animation: disco-light 1s infinite;
+        }
+        
+        /* Interactive emoji styles */
+        .party-emoji {
+            position: fixed;
+            font-size: 30px;
+            z-index: 5; /* Below the content but above background */
+            animation: float 3s infinite;
+            opacity: 0;
+            transition: opacity 0.5s, transform 0.3s ease;
+            cursor: pointer;
+        }
+        .party-emoji:hover {
+            transform: scale(1.3) rotate(15deg);
+            filter: brightness(1.2);
+        }
+        .party-emoji.clicked {
+            animation: spin-out 1s forwards;
+        }
+        
+        .rose-emoji {
+            position: fixed;
+            font-size: 50px;
+            z-index: 6;
+            animation: rose-float 6s infinite;
+            opacity: 0;
+            transition: opacity 0.5s, transform 0.3s ease;
+            cursor: pointer;
+            text-shadow: 0 0 15px rgba(255, 50, 50, 0.7);
+        }
+        .rose-emoji:hover {
+            transform: scale(1.3);
+            filter: brightness(1.2) drop-shadow(0 0 10px rgba(255, 0, 0, 0.7));
+        }
+        .rose-emoji.clicked {
+            animation: petal-burst 1.5s forwards;
+        }
+
+        .dance-emoji {
+            position: fixed;
+            font-size: 40px;
+            z-index: 5;
+            animation: dance 2s infinite;
+            opacity: 0;
+            transition: opacity 0.5s, transform 0.3s ease;
+            cursor: pointer;
+        }
+        .dance-emoji:hover {
+            transform: scale(1.2) translateY(-10px);
+        }
+        .dance-emoji.clicked {
+            animation: jump-dance 1s forwards;
+        }
+        
+        .disco-emoji {
+            position: fixed;
+            font-size: 50px;
+            z-index: 5;
+            animation: disco-spin 4s infinite;
+            opacity: 0;
+            transition: opacity 0.5s, transform 0.3s ease;
+            transform-origin: center;
+            cursor: pointer;
+        }
+        .disco-emoji:hover {
+            animation-duration: 1s;
+            filter: brightness(1.3);
+        }
+        .disco-emoji.clicked {
+            animation: disco-zoom 1s forwards;
+        }
+
+        .confetti {
+            width: 10px;
+            height: 10px;
+            position: fixed;
+            z-index: 4;
+            animation: fall linear;
+            pointer-events: none;
+        }
+        
+        .strobe-light {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: white;
+            box-shadow: 0 0 30px 15px rgba(255, 255, 255, 0.8);
+            animation: strobe 0.5s infinite;
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+            z-index: 3;
+        }
+        
+        /* Rose petals for special effect */
+        .rose-petal {
+            position: fixed;
+            font-size: 20px;
+            z-index: 4;
+            pointer-events: none;
+            opacity: 1;
+            transform-origin: center;
+        }
+        
+        /* Game-over display */
+        .game-over {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+        
+        .game-over.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .game-over h2 {
+            font-size: 50px;
+            margin-bottom: 20px;
+            color: #ff3399;
+            text-shadow: 0 0 10px #ff97c9;
+        }
+        
+        .game-over p {
+            font-size: 24px;
+            margin-bottom: 40px;
+        }
+        
+        .game-over button {
+            padding: 15px 30px;
+            font-size: 20px;
+            background-color: #ff3399;
+        }
+        
+        /* Animations for party mode */
+        @keyframes psychedelic-bg {
+            0% { background-color: #ffe6f2; }
+            20% { background-color: #e6f7ff; }
+            40% { background-color: #e6ffea; }
+            60% { background-color: #fff9e6; }
+            80% { background-color: #f3e6ff; }
+            100% { background-color: #ffe6f2; }
+        }
+
+        @keyframes rainbow-text {
+            0% { color: #ff5e8f; }
+            16% { color: #ff5eb2; }
+            33% { color: #aa5eff; }
+            50% { color: #5e9dff; }
+            66% { color: #5eff97; }
+            83% { color: #ffd45e; }
+            100% { color: #ff5e8f; }
+        }
+
+        @keyframes border-party {
+            0% { border-color: #ff97c9; box-shadow: 0 0 15px rgba(255, 151, 201, 0.5); }
+            33% { border-color: #97c7ff; box-shadow: 0 0 15px rgba(151, 199, 255, 0.5); }
+            66% { border-color: #97ffb9; box-shadow: 0 0 15px rgba(151, 255, 185, 0.5); }
+            100% { border-color: #ff97c9; box-shadow: 0 0 15px rgba(255, 151, 201, 0.5); }
+        }
+
+        @keyframes button-party {
+            0% { background-color: #ff5e8f; }
+            20% { background-color: #5e9dff; }
+            40% { background-color: #5eff97; }
+            60% { background-color: #ffd45e; }
+            80% { background-color: #aa5eff; }
+            100% { background-color: #ff5e8f; }
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.2); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+            100% { transform: translateY(0) rotate(0deg); }
+        }
+        
+        @keyframes rose-float {
+            0% { transform: translateY(0) rotate(-5deg); }
+            30% { transform: translateY(-30px) rotate(5deg); }
+            60% { transform: translateY(10px) rotate(-3deg); }
+            100% { transform: translateY(0) rotate(-5deg); }
+        }
+
+        @keyframes dance {
+            0% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-15px) rotate(10deg); }
+            50% { transform: translateY(0) rotate(-10deg); }
+            75% { transform: translateY(-10px) rotate(5deg); }
+            100% { transform: translateY(0) rotate(0deg); }
+        }
+        
+        @keyframes disco-light {
+            0% { background-color: rgba(255, 0, 128, 0.3); }
+            25% { background-color: rgba(0, 128, 255, 0.3); }
+            50% { background-color: rgba(0, 255, 128, 0.3); }
+            75% { background-color: rgba(255, 255, 0, 0.3); }
+            100% { background-color: rgba(255, 0, 128, 0.3); }
+        }
+        
+        @keyframes strobe {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+        
+        @keyframes disco-spin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+        
+        /* Click effect animations */
+        @keyframes spin-out {
+            0% { transform: scale(1); }
+            50% { transform: scale(2) rotate(180deg); }
+            100% { transform: scale(0) rotate(360deg); opacity: 0; }
+        }
+        
+        @keyframes jump-dance {
+            0% { transform: translateY(0); }
+            30% { transform: translateY(-50px) rotate(20deg); }
+            60% { transform: translateY(10px) rotate(-20deg); }
+            75% { transform: translateY(-20px) rotate(10deg); }
+            100% { transform: translateY(0); }
+        }
+        
+        @keyframes disco-zoom {
+            0% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(2.5) rotate(180deg); }
+            100% { transform: scale(1) rotate(360deg); }
+        }
+        
+        @keyframes petal-burst {
+            0% { transform: scale(1); }
+            20% { transform: scale(1.5); }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        @keyframes petal-float {
+            0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) rotate(var(--tr)); opacity: 0; }
+        }
+
+        /* Equalizer animation */
+        .equalizer {
+            display: none;
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 100px;
+            height: 60px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        .equalizer.active {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        
+        .equalizer-bar {
+            width: 8px;
+            background-color: #ff5eb2;
+            border-radius: 5px;
+            animation: equalizer-dance linear infinite;
+        }
+        
+        @keyframes equalizer-dance {
+            0%, 100% { height: 10px; }
+            50% { height: 50px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="title-container">
+        <h1>Ashley's ChatGPT Extractor</h1>
+        <p>💕 A special tool to review your ChatGPT messages 💕</p>
+        <button id="partyButton" title="Disco Party Time!">🪩</button>
+        <button id="muteButton" title="Mute/Unmute">🔊</button>
+    </div>
+    
+    <div class="instructions">
+        <p><strong>Hello Ashley!</strong> 💖</p>
+        <p>This tool will help you extract and review just your messages from ChatGPT conversations:</p>
+        <ol>
+            <li>Click "Choose File" and select your <strong>conversations.json</strong> file</li>
+            <li>Click the pink "Extract Messages" button</li>
+            <li>Your messages will appear below, separated by date</li>
+            <li>Use the sort buttons to arrange by newest or oldest first</li>
+            <li>Use "Download as Text File" to save your messages</li>
+        </ol>
+    </div>
+    
+    <div class="file-container">
+        <input type="file" id="fileInput" accept=".json">
+        <button id="extractButton">❤️ Extract Messages ❤️</button>
+        <button id="downloadBtn">💾 Download as Text File</button>
+    </div>
+    
+    <div id="result"></div>
+    
+    <div class="heart-divider">· · · ❤️ · · ·</div>
+    
+    <div class="output-container">
+        <div class="sort-controls" id="sortControls" style="display: none;">
+            <button class="sort-btn active" id="newestFirst">💕 Newest First</button>
+            <button class="sort-btn" id="oldestFirst">💕 Oldest First</button>
+        </div>
+        <pre id="output"></pre>
+    </div>
+    
+    <div class="footer">
+        Made with love to help Ashley review her ChatGPT usage 💕
+    </div>
+    
+    <!-- Game elements -->
+    <div class="score-display" id="scoreDisplay">Score: 0</div>
+    <div class="level-display" id="levelDisplay">Level: 1</div>
+    <div class="game-over" id="gameOverScreen">
+        <h2>Game Over!</h2>
+        <p>Final Score: <span id="finalScore">0</span></p>
+        <button id="playAgainBtn">Play Again</button>
+    </div>
+    
+    <!-- Audio elements -->
+    <audio id="partyMusic" loop preload="auto">
+        <source src="https://assets.mixkit.co/music/preview/mixkit-tech-house-vibes-130.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+    
+    <!-- Sound effects -->
+    <audio id="popSound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3" type="audio/mp3">
+    </audio>
+    <audio id="comboSound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-bonus-alert-767.mp3" type="audio/mp3">
+    </audio>
+    <audio id="levelUpSound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-video-game-win-2016.mp3" type="audio/mp3">
+    </audio>
+    
+    <!-- Disco floor element -->
+    <div class="disco-floor" id="discoFloor"></div>
+    
+    <!-- Equalizer -->
+    <div class="equalizer" id="equalizer">
+        <div class="equalizer-bar" style="height:20px; animation-duration: 0.5s;"></div>
+        <div class="equalizer-bar" style="height:30px; animation-duration: 0.3s;"></div>
+        <div class="equalizer-bar" style="height:10px; animation-duration: 0.7s;"></div>
+        <div class="equalizer-bar" style="height:40px; animation-duration: 0.4s;"></div>
+        <div class="equalizer-bar" style="height:15px; animation-duration: 0.6s;"></div>
+        <div class="equalizer-bar" style="height:25px; animation-duration: 0.5s;"></div>
+    </div>
+    
+    <script>
+        let extractedText = '';
+        let conversationSections = [];
+        let currentSortOrder = 'newest'; // Default sort order
+        let partyMode = false;
+        let partyElements = [];
+        let strobeIntervalId = null;
+        let muted = false;
+        let audioLoaded = false;
+        let messageBoxRect = null;
+        
+        // Game variables
+        let gameScore = 0;
+        let gameLevel = 1;
+        let emojisCaught = 0;
+        let emojisTotal = 0;
+        let lastCatchTime = 0;
+        let combo = 0;
+        let gameActive = false;
+        let highScore = localStorage.getItem('emojiGameHighScore') || 0;
+        
+        // Audio elements
+        const audio = document.getElementById('partyMusic');
+        const popSound = document.getElementById('popSound');
+        const comboSound = document.getElementById('comboSound');
+        const levelUpSound = document.getElementById('levelUpSound');
+        
+        // Set up audio event listeners
+        audio.addEventListener('canplaythrough', function() {
+            audioLoaded = true;
+        });
+        
+        document.getElementById('extractButton').addEventListener('click', processFile);
+        document.getElementById('downloadBtn').addEventListener('click', downloadText);
+        document.getElementById('newestFirst').addEventListener('click', () => sortAndDisplay('newest'));
+        document.getElementById('oldestFirst').addEventListener('click', () => sortAndDisplay('oldest'));
+        document.getElementById('partyButton').addEventListener('click', togglePartyMode);
+        document.getElementById('muteButton').addEventListener('click', toggleMute);
+        document.getElementById('playAgainBtn').addEventListener('click', resetGame);
+        
+        // Create disco floor tiles
+        const discoFloor = document.getElementById('discoFloor');
+        for (let i = 0; i < 10; i++) {
+            const discoTile = document.createElement('div');
+            discoTile.classList.add('disco-tile');
+            discoTile.style.animationDelay = (i * 0.1) + 's';
+            discoFloor.appendChild(discoTile);
+        }
+        
+        // Track mouse position for interactive emojis
+        let mouseX = 0;
+        let mouseY = 0;
+        
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+        
+        function processFile() {
+            const fileInput = document.getElementById('fileInput');
+            const resultDiv = document.getElementById('result');
+            const outputPre = document.getElementById('output');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const sortControls = document.getElementById('sortControls');
+            
+            if (!fileInput.files || fileInput.files.length === 0) {
+                resultDiv.innerHTML = '<p class="error">Please select a file first. 💝</p>';
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            if (file.type !== 'application/json' && !file.name.endsWith('.json')) {
+                resultDiv.innerHTML = '<p class="error">Please select a JSON file. 💝</p>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '<p>Processing your file... 💕</p>';
+            downloadBtn.style.display = 'none';
+            sortControls.style.display = 'none';
+            
+            const reader = new FileReader();
+            
+            reader.onload = function(event) {
+                try {
+                    const conversations = JSON.parse(event.target.result);
+                    conversationSections = [];
+                    
+                    for (const conversation of conversations) {
+                        const userMessages = extractUserMessages(conversation);
+                        
+                        if (userMessages.length > 0) {
+                            // Store each conversation section with its date
+                            const createTime = conversation.create_time || 0;
+                            const date = new Date(createTime * 1000);
+                            const formattedDate = date.toLocaleDateString();
+                            
+                            conversationSections.push({
+                                date: date,
+                                formattedDate: formattedDate,
+                                messages: userMessages,
+                                timestamp: createTime
+                            });
+                        }
+                    }
+                    
+                    // Sort and display the conversations
+                    sortAndDisplay(currentSortOrder);
+                    
+                    resultDiv.innerHTML = '<p class="success">✨ Successfully extracted your messages! ✨</p>';
+                    
+                    if (conversationSections.length > 0) {
+                        downloadBtn.style.display = 'inline-block';
+                        sortControls.style.display = 'flex';
+                    }
+                    
+                    // Update the message box position
+                    updateMessageBoxPosition();
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                    resultDiv.innerHTML = `<p class="error">Oh no! Error parsing JSON: ${error.message} 💔</p>`;
+                    outputPre.textContent = '';
+                }
+            };
+            
+            reader.onerror = function() {
+                resultDiv.innerHTML = '<p class="error">Error reading the file. 💔</p>';
+                outputPre.textContent = '';
+            };
+            
+            reader.readAsText(file);
+        }
+        
+        function updateMessageBoxPosition() {
+            // Get the bounding rectangle of the message box
+            const outputPre = document.getElementById('output');
+            messageBoxRect = outputPre.getBoundingClientRect();
+        }
+        
+        function sortAndDisplay(sortOrder) {
+            const outputPre = document.getElementById('output');
+            const newestBtn = document.getElementById('newestFirst');
+            const oldestBtn = document.getElementById('oldestFirst');
+            
+            // Update the sort buttons appearance
+            if (sortOrder === 'newest') {
+                newestBtn.classList.add('active');
+                oldestBtn.classList.remove('active');
+            } else {
+                oldestBtn.classList.add('active');
+                newestBtn.classList.remove('active');
+            }
+            
+            currentSortOrder = sortOrder;
+            
+            // Sort the conversation sections
+            const sortedSections = [...conversationSections].sort((a, b) => {
+                if (sortOrder === 'newest') {
+                    return b.timestamp - a.timestamp; // Newest first
+                } else {
+                    return a.timestamp - b.timestamp; // Oldest first
+                }
+            });
+            
+            // Create the display text
+            let displayText = '';
+            let globalMsgCount = 1; // Initialize a global message counter
+            
+            sortedSections.forEach((section, index) => {
+                if (index > 0) {
+                    displayText += `\n\n=== ${section.formattedDate} ===\n\n`;
+                } else {
+                    displayText += `=== ${section.formattedDate} ===\n\n`;
+                }
+                
+                // Add numbered messages with global counter
+                section.messages.forEach((msg) => {
+                    displayText += `${globalMsgCount}. ${msg}\n`;
+                    globalMsgCount++; // Increment global counter for each message
+                });
+            });
+            
+            // Update display and extracted text
+            outputPre.textContent = displayText;
+            extractedText = displayText;
+            
+            // Update message box position after content changes
+            setTimeout(updateMessageBoxPosition, 100);
+        }
+        
+        function extractUserMessages(conversation) {
+            const userMessagesList = [];
+            const mapping = conversation.mapping;
+            const parentToChildren = {};
+            
+            // Build the parent-child relationships
+            for (const messageId in mapping) {
+                const node = mapping[messageId];
+                const parentId = node.parent;
+                
+                if (parentId) {
+                    if (!parentToChildren[parentId]) {
+                        parentToChildren[parentId] = [];
+                    }
+                    parentToChildren[parentId].push(messageId);
+                }
+            }
+            
+            // Find the root node
+            let rootId = null;
+            for (const messageId in mapping) {
+                if (!mapping[messageId].parent) {
+                    rootId = messageId;
+                    break;
+                }
+            }
+            
+            // Traverse the tree and collect user messages
+            function traverseTree(nodeId, level = 0) {
+                if (!nodeId) return;
+                
+                const node = mapping[nodeId];
+                const message = node.message;
+                
+                if (message && 
+                    message.author && 
+                    message.author.role === 'user' &&
+                    message.content && 
+                    message.content.content_type === 'text' && 
+                    message.content.parts && 
+                    message.content.parts.length > 0) {
+                    
+                    // Skip system or hidden messages
+                    const isHidden = message.metadata && 
+                                   (message.metadata.is_visually_hidden_from_conversation || 
+                                    message.metadata.is_user_system_message);
+                    
+                    if (!isHidden) {
+                        const createTime = message.create_time || 0;
+                        userMessagesList.push({
+                            text: message.content.parts[0],
+                            time: createTime,
+                            level: level
+                        });
+                    }
+                }
+                
+                // Process children
+                const children = parentToChildren[nodeId] || [];
+                const childrenWithTime = children.map(childId => {
+                    const childMsg = mapping[childId].message;
+                    return {
+                        id: childId,
+                        time: (childMsg && childMsg.create_time) || 0
+                    };
+                });
+                
+                childrenWithTime.sort((a, b) => a.time - b.time);
+                
+                for (const child of childrenWithTime) {
+                    traverseTree(child.id, level + 1);
+                }
+            }
+            
+            traverseTree(rootId);
+            
+            // Sort messages by tree level and time
+            userMessagesList.sort((a, b) => {
+                if (a.level !== b.level) return a.level - b.level;
+                return a.time - b.time;
+            });
+            
+            return userMessagesList.map(item => item.text);
+        }
+        
+        function downloadText() {
+            if (!extractedText.trim()) return;
+            
+            const blob = new Blob([extractedText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'chatgpt_messages.txt';
+            document.body.appendChild(a);
+            a.click();
+            
+            setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 100);
+        }
+        
+        // Toggle mute function
+        function toggleMute() {
+            const muteButton = document.getElementById('muteButton');
+            
+            muted = !muted;
+            
+            if (muted) {
+                muteButton.textContent = '🔇';
+                muteButton.classList.add('muted');
+                if (audio) {
+                    audio.pause();
+                }
+            } else {
+                muteButton.textContent = '🔊';
+                muteButton.classList.remove('muted');
+                if (partyMode && audio) {
+                    playAudioSafely();
+                }
+            }
+        }
+        
+        // Safe audio play method with proper error handling
+        function playAudioSafely() {
+            if (audio && !muted) {
+                // Use a promise to handle the play request properly
+                const playPromise = audio.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        // Playback started successfully
+                        console.log("🎵 Party music is playing!");
+                    }).catch(error => {
+                        // Auto-play was prevented or other error
+                        console.log("Music couldn't start automatically: ", error);
+                        
+                        // Show a message to the user about interaction requirement
+                        const resultDiv = document.getElementById('result');
+                        resultDiv.innerHTML = '<p>Click anywhere to start the party music! 🎵</p>';
+                        
+                        // Add a one-time click handler to the document to start music
+                        const clickHandler = function() {
+                            if (partyMode && !muted) {
+                                audio.play()
+                                    .then(() => console.log("Music started on user interaction"))
+                                    .catch(e => console.log("Still can't play audio:", e));
+                            }
+                            document.removeEventListener('click', clickHandler);
+                        };
+                        document.addEventListener('click', clickHandler);
+                    });
+                }
+            }
+        }
+        
+        // Play sound effect safely
+        function playSoundEffect(soundElement) {
+            if (muted) return;
+            
+            // Reset to start
+            soundElement.currentTime = 0;
+            
+            // Play the sound
+            const playPromise = soundElement.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log("Couldn't play sound effect:", error);
+                });
+            }
+        }
+        
+        // Function to check if a position is outside the message box area
+        function isOutsideMessageBox(x, y, padding = 50) {
+            if (!messageBoxRect) return true;
+            
+            // Add padding around the message box
+            const paddedRect = {
+                left: messageBoxRect.left - padding,
+                right: messageBoxRect.right + padding,
+                top: messageBoxRect.top - padding,
+                bottom: messageBoxRect.bottom + padding
+            };
+            
+            return x < paddedRect.left || x > paddedRect.right || 
+                   y < paddedRect.top || y > paddedRect.bottom;
+        }
+        
+        // Function to get a random position that's away from the message box
+        function getRandomPositionAwayFromMessageBox() {
+            let x, y;
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+            let attempts = 0;
+            
+            // Try to find a position away from message box
+            do {
+                x = Math.random() * windowWidth;
+                y = Math.random() * windowHeight;
+                attempts++;
+                
+                // After many attempts, just place it somewhere
+                if (attempts > 20) break;
+            } while (!isOutsideMessageBox(x, y));
+            
+            return { x, y };
+        }
+        
+        // Game functions
+        function initGame() {
+            // Set up game interface
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            const levelDisplay = document.getElementById('levelDisplay');
+            
+            // Reset game variables
+            gameScore = 0;
+            gameLevel = 1;
+            emojisCaught = 0;
+            emojisTotal = 0;
+            combo = 0;
+            gameActive = true;
+            
+            // Update displays
+            scoreDisplay.textContent = `Score: ${gameScore}`;
+            levelDisplay.textContent = `Level: ${gameLevel}`;
+            
+            // Show game elements
+            scoreDisplay.classList.add('visible');
+            levelDisplay.classList.add('visible');
+            
+            // Hide game over screen if visible
+            document.getElementById('gameOverScreen').classList.remove('visible');
+        }
+        
+        function resetGame() {
+            // Hide game over screen
+            document.getElementById('gameOverScreen').classList.remove('visible');
+            
+            // Clear all emojis
+            cleanupPartyElements();
+            
+            // Reset and start a new game
+            initGame();
+            
+            // Create new emojis
+            createConfetti();
+            startEmojiParty();
+            createRoseEmojis();
+        }
+        
+        function updateScore(points, x, y) {
+            // Update total score
+            gameScore += points;
+            
+            // Update counter
+            emojisCaught++;
+            
+            // Check for combo (if caught within 1 second of previous catch)
+            const now = Date.now();
+            if (now - lastCatchTime < 1000) {
+                combo++;
+                
+                // Bonus points for combos
+                if (combo > 1) {
+                    const bonusPoints = combo * 10;
+                    gameScore += bonusPoints;
+                    
+                    // Display combo text
+                    showScorePopup(`Combo x${combo}! +${bonusPoints}`, x, y, '#ff00ff');
+                    
+                    // Play combo sound
+                    playSoundEffect(comboSound);
+                }
+            } else {
+                combo = 1;
+            }
+            lastCatchTime = now;
+            
+            // Display score popup
+            showScorePopup(`+${points}`, x, y);
+            
+            // Update score display
+            document.getElementById('scoreDisplay').textContent = `Score: ${gameScore}`;
+            
+            // Check for level up (every 10 emojis caught)
+            if (emojisCaught >= 10 * gameLevel) {
+                levelUp();
+            }
+            
+            // Play sound effect
+            playSoundEffect(popSound);
+        }
+        
+        function levelUp() {
+            gameLevel++;
+            emojisCaught = 0;
+            
+            // Update level display
+            document.getElementById('levelDisplay').textContent = `Level: ${gameLevel}`;
+            
+            // Show level up message
+            const outputPre = document.getElementById('output');
+            showScorePopup(`Level Up! ${gameLevel}`, 
+                           window.innerWidth / 2, 
+                           window.innerHeight / 2, 
+                           '#00ffaa', 
+                           30);
+            
+            // Play level up sound
+            playSoundEffect(levelUpSound);
+            
+            // Add more emojis at higher levels
+            createConfetti();
+            startEmojiParty();
+            
+            // Every other level, add roses
+            if (gameLevel % 2 === 0) {
+                createRoseEmojis();
+            }
+        }
+        
+        function showScorePopup(text, x, y, color = '#ff3399', size = 18) {
+            const popup = document.createElement('div');
+            popup.className = 'score-pop';
+            popup.textContent = text;
+            popup.style.left = x + 'px';
+            popup.style.top = y + 'px';
+            popup.style.color = color;
+            popup.style.fontSize = size + 'px';
+            
+            document.body.appendChild(popup);
+            
+            // Remove after animation
+            setTimeout(() => {
+                if (popup.parentNode) {
+                    popup.parentNode.removeChild(popup);
+                }
+            }, 1500);
+        }
+        
+        // Check if high score and show game over screen
+        function checkGameEnd() {
+            if (!gameActive) return;
+            
+            // Update high score
+            if (gameScore > highScore) {
+                highScore = gameScore;
+                localStorage.setItem('emojiGameHighScore', highScore);
+            }
+            
+            // Update game over screen
+            document.getElementById('finalScore').textContent = gameScore;
+            document.getElementById('gameOverScreen').classList.add('visible');
+            
+            // Hide game displays
+            document.getElementById('scoreDisplay').classList.remove('visible');
+            document.getElementById('levelDisplay').classList.remove('visible');
+            
+            gameActive = false;
+        }
+        
+        // Party mode functions
+        function togglePartyMode() {
+            partyMode = !partyMode;
+            const partyButton = document.getElementById('partyButton');
+            const discoFloor = document.getElementById('discoFloor');
+            const equalizer = document.getElementById('equalizer');
+            const muteButton = document.getElementById('muteButton');
+            
+            // Update the message box position
+            updateMessageBoxPosition();
+            
+            if (partyMode) {
+                // Start party mode
+                partyButton.classList.add('active');
+                discoFloor.classList.add('active');
+                equalizer.classList.add('active');
+                muteButton.style.display = 'flex';
+                
+                // Play music if not muted
+                if (!muted) {
+                    playAudioSafely();
+                }
+                
+                // Add party classes to elements
+                document.body.classList.add('party-mode');
+                document.querySelector('h1').classList.add('party-mode');
+                document.querySelector('.instructions').classList.add('party-mode');
+                document.querySelector('.heart-divider').classList.add('party-mode');
+                document.querySelector('.footer').classList.add('party-mode');
+                document.querySelector('pre').classList.add('party-mode');
+                
+                // Add party classes to all buttons
+                document.querySelectorAll('button:not(#partyButton):not(#muteButton)').forEach(btn => {
+                    btn.classList.add('party-mode');
+                });
+                
+                // Initialize game
+                initGame();
+                
+                // Create confetti explosion
+                createConfetti();
+                
+                // Create strobe lights
+                createStrobeLights();
+                
+                // Create floating hearts and emojis
+                startEmojiParty();
+                
+                // Create special rose emojis
+                createRoseEmojis();
+                
+                // Create disco effects
+                startDiscoEffects();
+                
+            } else {
+                // End party mode
+                partyButton.classList.remove('active');
+                discoFloor.classList.remove('active');
+                equalizer.classList.remove('active');
+                muteButton.style.display = 'none';
+                
+                // Don't stop the music, just lower volume if returning to party mode
+                if (audio) {
+                    audio.volume = 0.1;
+                    setTimeout(() => {
+                        if (!partyMode) {
+                            audio.pause();
+                            audio.volume = 1.0;
+                        } else {
+                            audio.volume = 1.0;
+                        }
+                    }, 2000);
+                }
+                
+                // Remove party classes
+                document.body.classList.remove('party-mode');
+                document.querySelector('h1').classList.remove('party-mode');
+                document.querySelector('.instructions').classList.remove('party-mode');
+                document.querySelector('.heart-divider').classList.remove('party-mode');
+                document.querySelector('.footer').classList.remove('party-mode');
+                document.querySelector('pre').classList.remove('party-mode');
+                
+                document.querySelectorAll('button:not(#partyButton):not(#muteButton)').forEach(btn => {
+                    btn.classList.remove('party-mode');
+                });
+                
+                // End game and show score
+                checkGameEnd();
+                
+                // Hide game elements
+                document.getElementById('scoreDisplay').classList.remove('visible');
+                document.getElementById('levelDisplay').classList.remove('visible');
+                
+                // Clear all party elements
+                cleanupPartyElements();
+                
+                // Clear strobe interval
+                if (strobeIntervalId) {
+                    clearInterval(strobeIntervalId);
+                    strobeIntervalId = null;
+                }
+            }
+        }
+        
+        function createConfetti() {
+            const colors = ['#ff97c9', '#97c7ff', '#97ffb9', '#fff797', '#d197ff', '#ff97c1', '#97ffff'];
+            const confettiCount = 200;
+            
+            for (let i = 0; i < confettiCount; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                
+                // Random position, color, size, and animation duration
+                const left = Math.random() * 100;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const size = Math.random() * 5 + 5;
+                const duration = Math.random() * 3 + 2;
+                
+                confetti.style.backgroundColor = color;
+                confetti.style.left = left + 'vw';
+                confetti.style.top = '-10px';
+                confetti.style.width = size + 'px';
+                confetti.style.height = size + 'px';
+                confetti.style.animationDuration = duration + 's';
+                
+                document.body.appendChild(confetti);
+                partyElements.push(confetti);
+                
+                // Remove after animation
+                setTimeout(() => {
+                    if (confetti.parentNode) {
+                        confetti.parentNode.removeChild(confetti);
+                        partyElements = partyElements.filter(el => el !== confetti);
+                    }
+                }, duration * 1000);
+            }
+        }
+        
+        function createStrobeLights() {
+            // Create strobes at different locations
+            const strobeCount = 3;
+            const positions = [
+                { top: '10%', left: '5%' },
+                { top: '20%', right: '5%' },
+                { top: '5%', left: '50%' }
+            ];
+            
+            for (let i = 0; i < strobeCount; i++) {
+                const strobe = document.createElement('div');
+                strobe.classList.add('strobe-light');
+                
+                Object.keys(positions[i]).forEach(prop => {
+                    strobe.style[prop] = positions[i][prop];
+                });
+                
+                strobe.style.animationDelay = (i * 0.2) + 's';
+                
+                document.body.appendChild(strobe);
+                partyElements.push(strobe);
+                
+                // Show with delay
+                setTimeout(() => {
+                    strobe.style.opacity = 1;
+                }, 100);
+            }
+        }
+        
+        // Create special rose emojis
+        function createRoseEmojis() {
+            const roseCount = 5 + Math.floor(gameLevel / 2); // More roses at higher levels
+            
+            for (let i = 0; i < roseCount; i++) {
+                setTimeout(() => {
+                    if (!partyMode) return;
+                    
+                    const roseEmoji = document.createElement('div');
+                    roseEmoji.classList.add('rose-emoji');
+                    roseEmoji.textContent = '🌹';
+                    
+                    // Get position away from message box
+                    const position = getRandomPositionAwayFromMessageBox();
+                    
+                    roseEmoji.style.left = position.x + 'px';
+                    roseEmoji.style.top = position.y + 'px';
+                    roseEmoji.style.animationDelay = (i * 0.3) + 's';
+                    
+                    // Make roses interactive
+                    roseEmoji.addEventListener('click', function(e) {
+                        // Add clicked class for animation
+                        this.classList.add('clicked');
+                        
+                        // Create rose petal burst effect
+                        createRosePetalBurst(position.x, position.y);
+                        
+                        // Add points (roses are worth more)
+                        updateScore(50, e.clientX, e.clientY);
+                        
+                        // At higher levels, roses escape after being clicked
+                        if (gameLevel > 2) {
+                            setTimeout(() => {
+                                this.classList.remove('clicked');
+                                
+                                // Make rose move to a new position
+                                const newPos = getRandomPositionAwayFromMessageBox();
+                                
+                                // Animate transition
+                                this.style.transition = 'left 1s, top 1s';
+                                this.style.left = newPos.x + 'px';
+                                this.style.top = newPos.y + 'px';
+                                
+                                // Add evasive behavior after moved
+                                if (gameLevel > 3) {
+                                    addEvasionBehavior(this, 2);
+                                }
+                            }, 1500);
+                        } else {
+                            // At lower levels, roses disappear after being clicked
+                            setTimeout(() => {
+                                if (this.parentNode) {
+                                    this.parentNode.removeChild(this);
+                                    partyElements = partyElements.filter(el => el !== this);
+                                    emojisTotal--;
+                                }
+                            }, 1500);
+                        }
+                    });
+                    
+                    document.body.appendChild(roseEmoji);
+                    partyElements.push(roseEmoji);
+                    emojisTotal++;
+                    
+                    // Add evasive behavior at higher levels
+                    if (gameLevel > 2) {
+                        addEvasionBehavior(roseEmoji, 1 + (gameLevel * 0.3));
+                    }
+                    
+                    // Show with a delay
+                    setTimeout(() => {
+                        roseEmoji.style.opacity = 1;
+                    }, 100);
+                    
+                }, i * 500);
+            }
+        }
+        
+        // Create rose petal burst effect
+        function createRosePetalBurst(x, y) {
+            const petalCount = 12;
+            const petals = ['🌹', '🌸', '💮', '🌺', '🌷', '💐', '🥀', '🌻', '🌼'];
+            
+            for (let i = 0; i < petalCount; i++) {
+                const petal = document.createElement('div');
+                petal.classList.add('rose-petal');
+                
+                // Random petal emoji
+                petal.textContent = petals[Math.floor(Math.random() * petals.length)];
+                
+                // Position at click point
+                petal.style.left = x + 'px';
+                petal.style.top = y + 'px';
+                
+                // Random direction to float
+                const angle = (i / petalCount) * 2 * Math.PI;
+                const distance = 50 + Math.random() * 100;
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance;
+                const tr = Math.random() * 360;
+                
+                // Set custom properties for animation
+                petal.style.setProperty('--tx', tx + 'px');
+                petal.style.setProperty('--ty', ty + 'px');
+                petal.style.setProperty('--tr', tr + 'deg');
+                
+                // Apply animation
+                petal.style.animation = 'petal-float 1.5s forwards';
+                
+                document.body.appendChild(petal);
+                
+                // Remove after animation
+                setTimeout(() => {
+                    if (petal.parentNode) {
+                        petal.parentNode.removeChild(petal);
+                    }
+                }, 1500);
+            }
+        }
+        
+        // Add evasion behavior
+        function addEvasionBehavior(element, difficulty = 1) {
+            // Store original position to prevent flying off
+            const originalLeft = parseFloat(element.style.left);
+            const originalTop = parseFloat(element.style.top);
+            
+            element.addEventListener('mousemove', function(e) {
+                // Calculate mouse distance
+                const rect = this.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                const dx = e.clientX - centerX;
+                const dy = e.clientY - centerY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                // If mouse is close, move away
+                if (distance < 100 + (difficulty * 30)) {
+                    // Normalize direction vector
+                    const dirX = dx / distance;
+                    const dirY = dy / distance;
+                    
+                    // Calculate escape speed based on distance (closer = faster escape)
+                    const proximity = 1 - (distance / (100 + (difficulty * 30)));
+                    const escapeSpeed = 5 + (10 * proximity * difficulty);
+                    
+                    // Move in opposite direction from mouse
+                    const currentLeft = parseFloat(this.style.left);
+                    const currentTop = parseFloat(this.style.top);
+                    
+                    // Reverse the direction (escape from mouse)
+                    const newLeft = currentLeft - dirX * escapeSpeed;
+                    const newTop = currentTop - dirY * escapeSpeed;
+                    
+                    // Apply the movement, staying within bounds
+                    this.style.left = Math.max(0, Math.min(window.innerWidth - rect.width, newLeft)) + 'px';
+                    this.style.top = Math.max(0, Math.min(window.innerHeight - rect.height, newTop)) + 'px';
+                    
+                    // Don't stray too far from original position at lower levels
+                    if (gameLevel < 4) {
+                        // Calculate distance from original position
+                        const origDx = newLeft - originalLeft;
+                        const origDy = newTop - originalTop;
+                        const origDistance = Math.sqrt(origDx * origDx + origDy * origDy);
+                        
+                        // If too far, apply a small force to return
+                        if (origDistance > 200) {
+                            const returnFactor = 0.05;
+                            this.style.left = (newLeft - origDx * returnFactor) + 'px';
+                            this.style.top = (newTop - origDy * returnFactor) + 'px';
+                        }
+                    }
+                }
+            });
+        }
+        
+        function startEmojiParty() {
+            // Different emoji categories
+            const heartEmojis = ['❤️', '💕', '😘', '💋', '💖', '✨', '💝', '💓', '💞'];
+            const discoEmojis = ['🪩', '🎵', '🎶', '🎸', '🎹', '🎤', '🎺', '🎷', '🎧'];
+            const weightliftingEmojis = ['🏋️‍♀️', '🏋️‍♂️', '💪', '🤸‍♀️', '🤸‍♂️', '🏆', '🥇', '🏅', '⚡'];
+            const robotEmojis = ['🤖', '🦾', '🦿', '🔋', '🔌', '⚙️', '🧠', '🖥️', '👾'];
+            const meatEmojis = ['🍖', '🥩', '🍗', '🥓', '🍔', '🌭', '🍕', '🍤', '🍲'];
+            const danceEmojis = ['💃', '🕺', '👯‍♀️', '🦄', '🌈', '👑', '👒', '🦋', '💎'];
+            
+            // Calculate number of emojis based on level
+            const emojiCount = 30 + (gameLevel * 5);
+            
+            // Add floating emojis from different categories
+            for (let i = 0; i < emojiCount; i++) {
+                setTimeout(() => {
+                    if (!partyMode) return;
+                    
+                    // Choose emoji category based on index
+                    let emojiCategory;
+                    const categoryIndex = i % 6;
+                    
+                    switch(categoryIndex) {
+                        case 0: emojiCategory = heartEmojis; break;
+                        case 1: emojiCategory = discoEmojis; break;
+                        case 2: emojiCategory = weightliftingEmojis; break;
+                        case 3: emojiCategory = robotEmojis; break;
+                        case 4: emojiCategory = meatEmojis; break;
+                        case 5: emojiCategory = danceEmojis; break;
+                    }
+                    
+                    const emoji = document.createElement('div');
+                    emoji.classList.add('party-emoji');
+                    emoji.textContent = emojiCategory[Math.floor(Math.random() * emojiCategory.length)];
+                    
+                    // Get position away from message box
+                    const position = getRandomPositionAwayFromMessageBox();
+                    
+                    emoji.style.left = position.x + 'px';
+                    emoji.style.top = position.y + 'px';
+                    emoji.style.animationDelay = (Math.random() * 2) + 's';
+                    emoji.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    
+                    // Store original animation
+                    const originalAnimation = emoji.style.animation;
+                    
+                    // Track if this emoji has been caught
+                    let caught = false;
+                    
+                    // Make emojis interactive
+                    emoji.addEventListener('click', function(e) {
+                        if (caught) return;
+                        caught = true;
+                        
+                        // Add clicked class for animation
+                        this.classList.add('clicked');
+                        
+                        // Update score (different points based on emoji type)
+                        let points = 10; // Default points
+                        
+                        // Bonus points based on emoji category
+                        if (categoryIndex === 0) points = 10; // Hearts
+                        if (categoryIndex === 1) points = 15; // Disco
+                        if (categoryIndex === 2) points = 20; // Weightlifting
+                        if (categoryIndex === 3) points = 25; // Robots
+                        if (categoryIndex === 4) points = 30; // Meat
+                        if (categoryIndex === 5) points = 35; // Dancers
+                        
+                        // At higher levels, emojis are worth more
+                        points += (gameLevel - 1) * 5;
+                        
+                        // Update score
+                        updateScore(points, e.clientX, e.clientY);
+                        
+                        // Remove after animation
+                        setTimeout(() => {
+                            if (this.parentNode) {
+                                this.parentNode.removeChild(this);
+                                partyElements = partyElements.filter(el => el !== this);
+                                emojisTotal--;
+                            }
+                        }, 1000);
+                    });
+                    
+                    // Add evasion behavior based on level
+                    if (gameLevel > 1) {
+                        const difficultyFactor = gameLevel * 0.2;
+                        addEvasionBehavior(emoji, difficultyFactor);
+                    }
+                    
+                    document.body.appendChild(emoji);
+                    partyElements.push(emoji);
+                    emojisTotal++;
+                    
+                    // Show with a delay
+                    setTimeout(() => {
+                        emoji.style.opacity = 1;
+                    }, 100);
+                    
+                }, i * (150 - Math.min(100, gameLevel * 10)));
+            }
+            
+            // Add big disco emojis that spin
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    if (!partyMode) return;
+                    
+                    const discoEmoji = document.createElement('div');
+                    discoEmoji.classList.add('disco-emoji');
+                    
+                    // Choose between disco ball and other symbols
+                    const bigEmojis = ['🪩', '🎵', '🏋️‍♀️', '🤖', '🍖'];
+                    discoEmoji.textContent = bigEmojis[i % bigEmojis.length];
+                    
+                    // Position away from message box
+                    const position = getRandomPositionAwayFromMessageBox();
+                    discoEmoji.style.left = position.x + 'px';
+                    discoEmoji.style.top = position.y + 'px';
+                    discoEmoji.style.animationDelay = (i * 0.2) + 's';
+                    
+                    // Track if caught
+                    let caught = false;
+                    
+                    // Make interactive
+                    discoEmoji.addEventListener('click', function(e) {
+                        if (caught) return;
+                        caught = true;
+                        
+                        this.classList.add('clicked');
+                        
+                        // Big emojis are worth more
+                        const points = 40 + (gameLevel * 10);
+                        updateScore(points, e.clientX, e.clientY);
+                        
+                        // At higher levels, big emojis reappear
+                        if (gameLevel > 2) {
+                            setTimeout(() => {
+                                this.classList.remove('clicked');
+                                caught = false;
+                                
+                                // Move to new position
+                                const newPos = getRandomPositionAwayFromMessageBox();
+                                this.style.transition = 'left 0.5s, top 0.5s';
+                                this.style.left = newPos.x + 'px';
+                                this.style.top = newPos.y + 'px';
+                                
+                                // Add more intense evasion
+                                if (gameLevel > 3) {
+                                    addEvasionBehavior(this, gameLevel * 0.5);
+                                }
+                            }, 1000);
+                        } else {
+                            // At lower levels, they disappear after being clicked
+                            setTimeout(() => {
+                                if (this.parentNode) {
+                                    this.parentNode.removeChild(this);
+                                    partyElements = partyElements.filter(el => el !== this);
+                                    emojisTotal--;
+                                }
+                            }, 1000);
+                        }
+                    });
+                    
+                    document.body.appendChild(discoEmoji);
+                    partyElements.push(discoEmoji);
+                    emojisTotal++;
+                    
+                    // Show with a delay
+                    setTimeout(() => {
+                        discoEmoji.style.opacity = 1;
+                    }, 100);
+                    
+                }, i * 400);
+            }
+            
+            // Add dancing people
+            for (let i = 0; i < 8; i++) {
+                setTimeout(() => {
+                    if (!partyMode) return;
+                    
+                    const dancer = document.createElement('div');
+                    dancer.classList.add('dance-emoji');
+                    
+                    // Choose between different dancers
+                    const dancers = ['💃', '🕺', '👯‍♀️', '🏋️‍♀️', '🏋️‍♂️', '🤖', '👾', '🍔'];
+                    dancer.textContent = dancers[i % dancers.length];
+                    
+                    // Position along the bottom
+                    const left = i * 12 + Math.random() * 5;
+                    const delay = Math.random();
+                    
+                    dancer.style.left = left + 'vw';
+                    dancer.style.bottom = '5vh';
+                    dancer.style.animationDelay = delay + 's';
+                    
+                    // Track if caught
+                    let caught = false;
+                    
+                    // Make interactive
+                    dancer.addEventListener('click', function(e) {
+                        if (caught) return;
+                        caught = true;
+                        
+                        this.classList.add('clicked');
+                        
+                        // Dancers are challenging to click so worth more
+                        const points = 25 + (gameLevel * 5);
+                        updateScore(points, e.clientX, e.clientY);
+                        
+                        // At higher levels, dancers return after jumping
+                        if (gameLevel > 2) {
+                            setTimeout(() => {
+                                this.classList.remove('clicked');
+                                caught = false;
+                                
+                                // Increase difficulty with level
+                                if (gameLevel > 4) {
+                                    // Start moving horizontally
+                                    const moveInterval = setInterval(() => {
+                                        if (!partyMode || !this.parentNode) {
+                                            clearInterval(moveInterval);
+                                            return;
+                                        }
+                                        
+                                        const currentLeft = parseFloat(this.style.left);
+                                        const newLeft = currentLeft + (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 3);
+                                        
+                                        // Keep within screen bounds
+                                        if (newLeft > 0 && newLeft < 95) {
+                                            this.style.left = newLeft + 'vw';
+                                        }
+                                    }, 100);
+                                }
+                            }, 1000);
+                        } else {
+                            // At lower levels, just remove after animation
+                            setTimeout(() => {
+                                if (this.parentNode) {
+                                    this.parentNode.removeChild(this);
+                                    partyElements = partyElements.filter(el => el !== this);
+                                    emojisTotal--;
+                                }
+                            }, 1000);
+                        }
+                    });
+                    
+                    document.body.appendChild(dancer);
+                    partyElements.push(dancer);
+                    emojisTotal++;
+                    
+                    // Show with a delay
+                    setTimeout(() => {
+                        dancer.style.opacity = 1;
+                    }, 100);
+                    
+                }, i * 300);
+            }
+            
+            // Continue the party if still active
+            if (partyMode) {
+                setTimeout(() => {
+                    if (partyMode) {
+                        createConfetti();
+                        startEmojiParty();
+                    }
+                }, 15000 - (gameLevel * 1000)); // Spawn more frequently at higher levels
+            }
+        }
+        
+        function startDiscoEffects() {
+            // Add strobing effects that change colors
+            strobeIntervalId = setInterval(() => {
+                if (!partyMode) {
+                    clearInterval(strobeIntervalId);
+                    return;
+                }
+                
+                // Create a new strobe at a random position
+                const strobe = document.createElement('div');
+                strobe.classList.add('strobe-light');
+                
+                // Random position that's away from message box
+                const position = getRandomPositionAwayFromMessageBox();
+                strobe.style.top = position.y + 'px';
+                strobe.style.left = position.x + 'px';
+                
+                // Random color
+                const hue = Math.floor(Math.random() * 360);
+                strobe.style.backgroundColor = `hsl(${hue}, 100%, 70%)`;
+                strobe.style.boxShadow = `0 0 30px 15px hsla(${hue}, 100%, 70%, 0.7)`;
+                
+                document.body.appendChild(strobe);
+                partyElements.push(strobe);
+                
+                // Show then fade
+                strobe.style.opacity = 1;
+                
+                setTimeout(() => {
+                    strobe.style.opacity = 0;
+                    setTimeout(() => {
+                        if (strobe.parentNode) {
+                            strobe.parentNode.removeChild(strobe);
+                            partyElements = partyElements.filter(el => el !== strobe);
+                        }
+                    }, 500);
+                }, 500);
+                
+            }, 800);
+            
+            // Animate equalizer bars
+            const bars = document.querySelectorAll('.equalizer-bar');
+            bars.forEach(bar => {
+                bar.style.animation = 'equalizer-dance ' + (Math.random() * 0.5 + 0.3) + 's linear infinite';
+            });
+        }
+        
+        function cleanupPartyElements() {
+            // Remove all party elements
+            partyElements.forEach(el => {
+                // Clean up any intervals that might be associated with the element
+                if (el.dataset && el.dataset.followInterval) {
+                    clearInterval(el.dataset.followInterval);
+                }
+                
+                // Remove the element
+                if (el.parentNode) {
+                    el.parentNode.removeChild(el);
+                }
+            });
+            partyElements = [];
+            
+            // Remove any strobes
+            document.querySelectorAll('.strobe-light').forEach(el => {
+                if (el.parentNode) {
+                    el.parentNode.removeChild(el);
+                }
+            });
+            
+            // Remove any rose petals
+            document.querySelectorAll('.rose-petal').forEach(el => {
+                if (el.parentNode) {
+                    el.parentNode.removeChild(el);
+                }
+            });
+        }
+        
+        // Update message box position on window resize
+        window.addEventListener('resize', updateMessageBoxPosition);
+    </script>
+</body>
+</html>
