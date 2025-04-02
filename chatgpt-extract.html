@@ -84,14 +84,7 @@
         button.party-mode {
             animation: button-party 3s infinite;
         }
-        #downloadBtn {
-            background-color: #7d93e0;
-            margin-left: 10px;
-            display: none;
-        }
-        #downloadBtn:hover {
-            background-color: #99aae8;
-        }
+        /* Removed old downloadBtn styles as they're now handled by app-button classes */
         #fileInput {
             margin-bottom: 20px;
         }
@@ -639,22 +632,83 @@
         <p><strong>Hello Ashley!</strong> 💖</p>
         <p>This tool will help you extract and review just your messages from ChatGPT conversations:</p>
         <ol>
-            <li>Click "Choose File" and select your <strong>conversations.json</strong> file</li>
-            <li>Click the pink "Extract Messages" button</li>
+            <li>Click "Choose File" and select your <strong>conversations.json</strong> file (your messages will be extracted automatically)</li>
             <li>Your messages will appear below, separated by date</li>
             <li>Use the sort buttons to arrange by newest or oldest first</li>
-            <li>Use "Download as Text File" to save your messages</li>
+            <li>Use "Download Text" to save your messages as a text file</li>
             <li>Your conversations will be automatically saved in your browser and loaded next time you open the app</li>
-            <li>To clear saved conversations, use the "Clear Saved Messages" button</li>
+            <li>Use "Clear Messages" to remove all saved conversations</li>
         </ol>
     </div>
     
     <div class="file-container">
-        <input type="file" id="fileInput" accept=".json">
-        <button id="extractButton">❤️ Extract Messages ❤️</button>
-        <button id="downloadBtn">💾 Download as Text File</button>
-        <button id="clearBtn" style="background-color: #e66767; display: none;">🗑️ Clear Saved Messages</button>
+        <label for="fileInput" class="app-button choose-button">
+            <span>📄 Choose File</span>
+            <input type="file" id="fileInput" accept=".json" style="display:none;">
+        </label>
+        <button type="button" id="clearBtn" class="app-button clear-button" disabled>
+            <span>🗑️ Clear Messages</span>
+        </button>
+        <button type="button" id="downloadBtn" class="app-button download-button" disabled>
+            <span>💾 Download Text</span>
+        </button>
     </div>
+    
+    <style>
+        .file-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        .app-button {
+            padding: 12px 20px;
+            width: 180px;
+            height: 45px;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+            font-size: 16px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .choose-button {
+            background-color: #d05d8a;
+        }
+        .choose-button:hover {
+            background-color: #e77da5;
+            transform: translateY(-2px);
+        }
+        .clear-button {
+            background-color: #e66767;
+        }
+        .clear-button:hover:not(:disabled) {
+            background-color: #f57979;
+            transform: translateY(-2px);
+        }
+        .download-button {
+            background-color: #7d93e0;
+            /* Ensure the button is always visible */
+            display: inline-flex !important;
+        }
+        .download-button:hover:not(:disabled) {
+            background-color: #99aae8;
+            transform: translateY(-2px);
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+    </style>
     
     <div id="result"></div>
     
@@ -746,15 +800,17 @@
                     // Display the loaded conversations
                     sortAndDisplay(currentSortOrder);
                     
-                    // Show relevant controls
-                    document.getElementById('downloadBtn').style.display = 'inline-block';
-                    document.getElementById('sortControls').style.display = 'flex';
-                    document.getElementById('clearBtn').style.display = 'inline-block';
-                    
-                    // Show success message
-                    document.getElementById('result').innerHTML = 
-                        '<p class="success">✨ Loaded your saved messages from previous session! ✨</p>';
+                    // Enable relevant controls if there are conversations
+                    if (conversationSections.length > 0) {
+                        document.getElementById('downloadBtn').disabled = false;
+                        document.getElementById('clearBtn').disabled = false;
+                        document.getElementById('sortControls').style.display = 'flex';
                         
+                        // Show success message
+                        document.getElementById('result').innerHTML = 
+                            '<p class="success">✨ Loaded your saved messages from previous session! ✨</p>';
+                    }
+                    
                     // Update message box position
                     updateMessageBoxPosition();
                     
@@ -779,10 +835,10 @@
                 document.getElementById('output').textContent = '';
                 extractedText = '';
                 
-                // Hide the buttons
-                document.getElementById('downloadBtn').style.display = 'none';
+                // Disable the buttons
+                document.getElementById('downloadBtn').disabled = true;
+                document.getElementById('clearBtn').disabled = true;
                 document.getElementById('sortControls').style.display = 'none';
-                document.getElementById('clearBtn').style.display = 'none';
                 
                 // Show success message
                 document.getElementById('result').innerHTML = 
@@ -796,10 +852,18 @@
         
         // Load previously saved conversations when the page loads
         window.addEventListener('DOMContentLoaded', function() {
+            // Make sure all buttons are properly visible (but disabled)
+            document.getElementById('downloadBtn').disabled = true;
+            document.getElementById('downloadBtn').style.display = '';
+            document.getElementById('clearBtn').disabled = true;
+            
+            console.log('Initial button state set');
+            
+            // Load any saved conversations
             loadConversationsFromLocalStorage();
         });
         
-        document.getElementById('extractButton').addEventListener('click', processFile);
+        document.getElementById('fileInput').addEventListener('change', processFile);
         document.getElementById('downloadBtn').addEventListener('click', downloadText);
         document.getElementById('newestFirst').addEventListener('click', () => sortAndDisplay('newest'));
         document.getElementById('oldestFirst').addEventListener('click', () => sortAndDisplay('oldest'));
@@ -825,11 +889,13 @@
             mouseY = e.clientY;
         });
         
-        function processFile() {
-            const fileInput = document.getElementById('fileInput');
+        function processFile(event) {
+            console.log("Processing file...");
+            const fileInput = event.target;
             const resultDiv = document.getElementById('result');
             const outputPre = document.getElementById('output');
             const downloadBtn = document.getElementById('downloadBtn');
+            console.log("Download button before:", downloadBtn, downloadBtn.disabled, downloadBtn.style.display);
             const sortControls = document.getElementById('sortControls');
             
             if (!fileInput.files || fileInput.files.length === 0) {
@@ -844,7 +910,7 @@
             }
             
             resultDiv.innerHTML = '<p>Processing your file... 💕</p>';
-            downloadBtn.style.display = 'none';
+            downloadBtn.disabled = true;
             sortControls.style.display = 'none';
             
             const reader = new FileReader();
@@ -881,9 +947,10 @@
                     resultDiv.innerHTML = '<p class="success">✨ Successfully extracted your messages! ✨</p>';
                     
                     if (conversationSections.length > 0) {
-                        downloadBtn.style.display = 'inline-block';
+                        downloadBtn.disabled = false;
+                        console.log("Download button after:", downloadBtn, downloadBtn.disabled, downloadBtn.style.display);
                         sortControls.style.display = 'flex';
-                        document.getElementById('clearBtn').style.display = 'inline-block';
+                        document.getElementById('clearBtn').disabled = false;
                     }
                     
                     // Update the message box position
@@ -1062,6 +1129,10 @@
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
             }, 100);
+            
+            // Show a success message
+            document.getElementById('result').innerHTML = 
+                '<p class="success">✨ Downloaded your messages as a text file! ✨</p>';
         }
         
         // Toggle mute function
@@ -1238,7 +1309,7 @@
                 document.querySelector('pre').classList.add('party-mode');
                 
                 // Add party classes to all buttons
-                document.querySelectorAll('button:not(#partyButton):not(#muteButton)').forEach(btn => {
+                document.querySelectorAll('button:not(#partyButton):not(#muteButton), .app-button').forEach(btn => {
                     btn.classList.add('party-mode');
                 });
                 
@@ -1286,7 +1357,7 @@
                 document.querySelector('.footer').classList.remove('party-mode');
                 document.querySelector('pre').classList.remove('party-mode');
                 
-                document.querySelectorAll('button:not(#partyButton):not(#muteButton)').forEach(btn => {
+                document.querySelectorAll('button:not(#partyButton):not(#muteButton), .app-button').forEach(btn => {
                     btn.classList.remove('party-mode');
                 });
                 
