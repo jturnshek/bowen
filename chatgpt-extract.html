@@ -644,6 +644,8 @@
             <li>Your messages will appear below, separated by date</li>
             <li>Use the sort buttons to arrange by newest or oldest first</li>
             <li>Use "Download as Text File" to save your messages</li>
+            <li>Your conversations will be automatically saved in your browser and loaded next time you open the app</li>
+            <li>To clear saved conversations, use the "Clear Saved Messages" button</li>
         </ol>
     </div>
     
@@ -651,6 +653,7 @@
         <input type="file" id="fileInput" accept=".json">
         <button id="extractButton">❤️ Extract Messages ❤️</button>
         <button id="downloadBtn">💾 Download as Text File</button>
+        <button id="clearBtn" style="background-color: #e66767; display: none;">🗑️ Clear Saved Messages</button>
     </div>
     
     <div id="result"></div>
@@ -702,6 +705,9 @@
         // Party mode variables
         let partyActive = false;
         
+        // localStorage key for saving conversations
+        const STORAGE_KEY = 'ashleyChatGPTConversations';
+        
         // Audio elements
         const audio = document.getElementById('partyMusic');
         
@@ -710,12 +716,96 @@
             audioLoaded = true;
         });
         
+        // Save conversations to localStorage
+        function saveConversationsToLocalStorage() {
+            try {
+                // Save to localStorage (convert to string for storage)
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(conversationSections));
+                console.log('Conversations saved to localStorage');
+            } catch (error) {
+                console.error('Error saving to localStorage:', error);
+            }
+        }
+        
+        // Load conversations from localStorage
+        function loadConversationsFromLocalStorage() {
+            try {
+                const savedData = localStorage.getItem(STORAGE_KEY);
+                if (savedData) {
+                    // Parse the saved data
+                    const parsedData = JSON.parse(savedData);
+                    
+                    // Fix date objects which get stored as strings in localStorage
+                    parsedData.forEach(section => {
+                        section.date = new Date(section.date);
+                    });
+                    
+                    // Update the conversation sections
+                    conversationSections = parsedData;
+                    
+                    // Display the loaded conversations
+                    sortAndDisplay(currentSortOrder);
+                    
+                    // Show relevant controls
+                    document.getElementById('downloadBtn').style.display = 'inline-block';
+                    document.getElementById('sortControls').style.display = 'flex';
+                    document.getElementById('clearBtn').style.display = 'inline-block';
+                    
+                    // Show success message
+                    document.getElementById('result').innerHTML = 
+                        '<p class="success">✨ Loaded your saved messages from previous session! ✨</p>';
+                        
+                    // Update message box position
+                    updateMessageBoxPosition();
+                    
+                    return true;
+                }
+            } catch (error) {
+                console.error('Error loading from localStorage:', error);
+            }
+            return false;
+        }
+        
+        // Clear saved conversations from localStorage
+        function clearSavedConversations() {
+            try {
+                // Clear from localStorage
+                localStorage.removeItem(STORAGE_KEY);
+                
+                // Clear current conversations
+                conversationSections = [];
+                
+                // Clear the display
+                document.getElementById('output').textContent = '';
+                extractedText = '';
+                
+                // Hide the buttons
+                document.getElementById('downloadBtn').style.display = 'none';
+                document.getElementById('sortControls').style.display = 'none';
+                document.getElementById('clearBtn').style.display = 'none';
+                
+                // Show success message
+                document.getElementById('result').innerHTML = 
+                    '<p class="success">✨ All saved messages have been cleared! ✨</p>';
+                
+                console.log('Conversations cleared from localStorage');
+            } catch (error) {
+                console.error('Error clearing localStorage:', error);
+            }
+        }
+        
+        // Load previously saved conversations when the page loads
+        window.addEventListener('DOMContentLoaded', function() {
+            loadConversationsFromLocalStorage();
+        });
+        
         document.getElementById('extractButton').addEventListener('click', processFile);
         document.getElementById('downloadBtn').addEventListener('click', downloadText);
         document.getElementById('newestFirst').addEventListener('click', () => sortAndDisplay('newest'));
         document.getElementById('oldestFirst').addEventListener('click', () => sortAndDisplay('oldest'));
         document.getElementById('partyButton').addEventListener('click', togglePartyMode);
         document.getElementById('muteButton').addEventListener('click', toggleMute);
+        document.getElementById('clearBtn').addEventListener('click', clearSavedConversations);
         
         // Create disco floor tiles
         const discoFloor = document.getElementById('discoFloor');
@@ -782,6 +872,9 @@
                         }
                     }
                     
+                    // Save conversations to localStorage
+                    saveConversationsToLocalStorage();
+                    
                     // Sort and display the conversations
                     sortAndDisplay(currentSortOrder);
                     
@@ -790,6 +883,7 @@
                     if (conversationSections.length > 0) {
                         downloadBtn.style.display = 'inline-block';
                         sortControls.style.display = 'flex';
+                        document.getElementById('clearBtn').style.display = 'inline-block';
                     }
                     
                     // Update the message box position
