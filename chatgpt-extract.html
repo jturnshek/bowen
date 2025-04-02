@@ -716,8 +716,8 @@
     
     <div class="output-container">
         <div class="sort-controls" id="sortControls" style="display: none;">
-            <button class="sort-btn active" id="newestFirst">💕 Newest First</button>
-            <button class="sort-btn" id="oldestFirst">💕 Oldest First</button>
+            <button class="sort-btn" id="newestFirst">💕 Newest First</button>
+            <button class="sort-btn active" id="oldestFirst">💕 Oldest First</button>
         </div>
         <pre id="output"></pre>
     </div>
@@ -748,7 +748,7 @@
     <script>
         let extractedText = '';
         let conversationSections = [];
-        let currentSortOrder = 'newest'; // Default sort order
+        let currentSortOrder = 'oldest'; // Default sort order
         let partyMode = false;
         let partyElements = [];
         let strobeIntervalId = null;
@@ -1005,6 +1005,15 @@
             // Create the display text
             let displayText = '';
             let globalMsgCount = 1; // Initialize a global message counter
+            let totalMessages = 0;
+            
+            // Count total messages first if we need to reverse the numbering
+            if (sortOrder === 'newest') {
+                sortedSections.forEach(section => {
+                    totalMessages += section.messages.length;
+                });
+                globalMsgCount = totalMessages; // Start from the total for newest first
+            }
             
             sortedSections.forEach((section, index) => {
                 if (index > 0) {
@@ -1013,10 +1022,17 @@
                     displayText += `=== ${section.formattedDate} ===\n\n`;
                 }
                 
-                // Add numbered messages with global counter
+                // Add numbered messages
                 section.messages.forEach((msg) => {
-                    displayText += `${globalMsgCount}. ${msg}\n`;
-                    globalMsgCount++; // Increment global counter for each message
+                    if (sortOrder === 'newest') {
+                        // Newest first: count down from total
+                        displayText += `${globalMsgCount}. ${msg}\n`;
+                        globalMsgCount--; // Decrement counter for each message
+                    } else {
+                        // Oldest first: count up from 1
+                        displayText += `${globalMsgCount}. ${msg}\n`;
+                        globalMsgCount++; // Increment counter for each message
+                    }
                 });
             });
             
